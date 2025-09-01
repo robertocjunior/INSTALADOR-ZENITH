@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Alert, Image, Platform } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import * as FileSystem from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as SecureStore from 'expo-secure-store';
@@ -186,6 +187,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" />
       <View style={styles.logoContainer}>
         <Image source={require('./assets/icons/icon512x512.png')} style={styles.appIcon} resizeMode="contain" />
         <Image source={require('./assets/icons/name.png')} style={styles.appNameImage} resizeMode="contain" />
