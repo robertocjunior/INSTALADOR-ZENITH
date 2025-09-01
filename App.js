@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Alert, Image, Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as SecureStore from 'expo-secure-store';
+import * as Notifications from 'expo-notifications';
+import * as TaskManager from 'expo-task-manager';
+import * as BackgroundFetch from 'expo-background-fetch';
+
+// --- Nome da nossa tarefa em segundo plano ---
+const BACKGROUND_FETCH_TASK = 'background-update-check';
 
 // --- Variáveis de Ambiente ---
-// As variáveis agora são lidas do arquivo .env
 const GITHUB_TOKEN = process.env.EXPO_PUBLIC_GITHUB_TOKEN;
 const REPO_OWNER = process.env.EXPO_PUBLIC_REPO_OWNER;
 const REPO_NAME = process.env.EXPO_PUBLIC_REPO_NAME;
@@ -13,69 +18,134 @@ const REPO_NAME = process.env.EXPO_PUBLIC_REPO_NAME;
 
 const INSTALLED_VERSION_KEY = 'zenith_installed_version';
 
+// ==============================================================================
+// PARTE 1: LÓGICA DA TAREFA EM SEGUNDO PLANO
+// ==============================================================================
+
+async function sendUpdateNotification(version) {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Nova atualização do Zenith! 🚀",
+      body: `A versão ${version} está pronta para ser instalada.`,
+      sound: 'default',
+    },
+    trigger: { seconds: 1 },
+  });
+}
+
+TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
+  try {
+    console.log(`[${new Date().toLocaleTimeString()}] Executando tarefa em segundo plano...`);
+    
+    if (!GITHUB_TOKEN || !REPO_OWNER || !REPO_NAME) {
+      console.error("BG Task: Variáveis de ambiente não encontradas.");
+      return BackgroundFetch.BackgroundFetchResult.Failed;
+    }
+
+    const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
+    const response = await fetch(apiUrl, {
+      headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' },
+    });
+
+    if (!response.ok) {
+      console.error("BG Task: Falha ao buscar no GitHub.");
+      return BackgroundFetch.BackgroundFetchResult.Failed;
+    }
+
+    const release = await response.json();
+    const latestTag = release.tag_name;
+    const localVersion = await SecureStore.getItemAsync(INSTALLED_VERSION_KEY);
+
+    if (latestTag && localVersion !== latestTag) {
+      console.log(`[${new Date().toLocaleTimeString()}] Nova versão encontrada em background: ${latestTag}`);
+      await sendUpdateNotification(latestTag);
+      return BackgroundFetch.BackgroundFetchResult.NewData;
+    } else {
+      console.log(`[${new Date().toLocaleTimeString()}] Nenhuma nova versão encontrada em background.`);
+      return BackgroundFetch.BackgroundFetchResult.NoData;
+    }
+  } catch (error) {
+    console.error("BG Task: Erro ao executar tarefa.", error);
+    return BackgroundFetch.BackgroundFetchResult.Failed;
+  }
+});
+
+// ==============================================================================
+// PARTE 2: COMPONENTE DA INTERFACE DO USUÁRIO
+// ==============================================================================
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({ shouldShowAlert: true, shouldPlaySound: true, shouldSetBadge: false }),
+});
+
+async function registerBackgroundFetchAsync() {
+  console.log("Registrando tarefa de background...");
+  return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+    minimumInterval: 15 * 60, // Mínimo de 15 minutos
+    stopOnTerminate: false,
+    startOnBoot: true,
+  });
+}
+
+async function registerForPushNotificationsAsync() {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+    });
+  }
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== 'granted') {
+    Alert.alert('Permissão negada', 'Você não receberá notificações sobre novas atualizações!');
+  }
+}
+
 export default function App() {
   const [status, setStatus] = useState('Iniciando...');
   const [storedVersion, setStoredVersion] = useState(null);
   const [latestVersion, setLatestVersion] = useState(null);
   const [downloadUrl, setDownloadUrl] = useState(null);
-  const [isChecking, setIsChecking] = useState(true);
+  const [isChecking, setIsChecking] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
 
   useEffect(() => {
-    // Verificação para garantir que as variáveis do .env foram carregadas
+    registerForPushNotificationsAsync();
+    registerBackgroundFetchAsync();
+
     if (!GITHUB_TOKEN || !REPO_OWNER || !REPO_NAME) {
-      Alert.alert(
-        "Erro de Configuração",
-        "As variáveis de ambiente do GitHub (token, owner, repo) não foram encontradas. Verifique seu arquivo .env e reinicie o aplicativo."
-      );
+      Alert.alert("Erro de Configuração", "As variáveis de ambiente do GitHub não foram encontradas.");
       setStatus("Erro de configuração. Verifique o arquivo .env.");
-      setIsChecking(false);
       return;
     }
     checkUpdates();
   }, []);
 
   const checkUpdates = async () => {
+    if (isChecking) return;
     setIsChecking(true);
     setStatus('Verificando atualizações...');
-    setDownloadProgress(0);
-
     try {
       const localVersion = await SecureStore.getItemAsync(INSTALLED_VERSION_KEY);
       setStoredVersion(localVersion || 'Nenhuma');
       const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
-      
-      console.log("Buscando em:", apiUrl); // Log para depuração
-
       const response = await fetch(apiUrl, {
         headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' },
       });
-
-      if (!response.ok) {
-        const errorBody = await response.text();
-        throw new Error(`Erro no GitHub: ${response.status} - ${errorBody}`);
-      }
-      
+      if (!response.ok) throw new Error(`Erro no GitHub: ${response.status}`);
       const release = await response.json();
       const latestTag = release.tag_name;
       setLatestVersion(latestTag);
       const apkAsset = release.assets.find(asset => asset.name.endsWith('.apk'));
-
-      if (!apkAsset) {
-        setStatus('Erro: Nenhum arquivo .apk encontrado na release mais recente.');
-        return;
-      }
-      
+      if (!apkAsset) { setStatus('Erro: Nenhum .apk encontrado.'); return; }
       setDownloadUrl(apkAsset.browser_download_url);
-
       if (localVersion === latestTag) {
         setStatus('Você já tem a versão mais recente registrada.');
       } else {
         setStatus(`Nova versão (${latestTag}) disponível!`);
       }
     } catch (error) {
-      console.error('Falha ao verificar atualizações:', error);
       setStatus(`Falha ao verificar: ${error.message}`);
     } finally {
       setIsChecking(false);
@@ -83,41 +153,26 @@ export default function App() {
   };
 
   const downloadAndInstall = async () => {
-    if (!downloadUrl) {
-      Alert.alert('Erro', 'URL para download não encontrada.');
-      return;
-    }
-
+    if (!downloadUrl) { Alert.alert('Erro', 'URL para download não encontrada.'); return; }
     setIsDownloading(true);
     setStatus('Baixando...');
     const fileUri = FileSystem.documentDirectory + 'zenith_app.apk';
-
     const downloadResumable = FileSystem.createDownloadResumable(
-      downloadUrl,
-      fileUri,
+      downloadUrl, fileUri,
       { headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/octet-stream' } },
-      (progress) => {
-        const percentage = Math.round((progress.totalBytesWritten / progress.totalBytesExpectedToWrite) * 100);
-        setDownloadProgress(percentage);
-      }
+      (progress) => setDownloadProgress(Math.round((progress.totalBytesWritten / progress.totalBytesExpectedToWrite) * 100))
     );
-
     try {
       const { uri } = await downloadResumable.downloadAsync();
       setStatus('Download concluído. Abrindo instalador...');
       await SecureStore.setItemAsync(INSTALLED_VERSION_KEY, latestVersion);
       const contentUri = await FileSystem.getContentUriAsync(uri);
-
       await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
         data: contentUri,
-        flags: 1, 
-        type: 'application/vnd.android.package-archive',
+        flags: 1, type: 'application/vnd.android.package-archive',
       });
-      
       checkUpdates();
-
     } catch (error) {
-      console.error('Erro no download/instalação:', error);
       setStatus('Erro ao abrir o instalador do app.');
       Alert.alert("Erro", "Não foi possível abrir o arquivo de instalação.");
     } finally {
@@ -136,7 +191,6 @@ export default function App() {
         <Image source={require('./assets/icons/name.png')} style={styles.appNameImage} resizeMode="contain" />
       </View>
       <Text style={styles.headerTitle}>Instalador</Text>
-      
       <View style={styles.infoCard}>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Versão Registrada:</Text>
@@ -147,38 +201,25 @@ export default function App() {
           <Text style={styles.infoValue}>{latestVersion || 'Verificando...'}</Text>
         </View>
       </View>
-
       <Text style={styles.statusText}>{status}</Text>
-
       {isChecking && <ActivityIndicator size="large" color="#007AFF" style={styles.activityIndicator} />}
-
       {isDownloading && (
         <View style={styles.progressContainer}>
             <Text style={styles.progressText}>{`Baixando... ${downloadProgress}%`}</Text>
-            <View style={styles.progressBarBackground}>
-                <View style={[styles.progressBarFill, {width: `${downloadProgress}%`}]} />
-            </View>
+            <View style={styles.progressBarBackground}><View style={[styles.progressBarFill, {width: `${downloadProgress}%`}]} /></View>
         </View>
       )}
-
       {isUpdateAvailable && !isChecking && !isDownloading && (
         <TouchableOpacity style={styles.primaryButton} onPress={downloadAndInstall} activeOpacity={0.7}>
           <Text style={styles.primaryButtonText}>{storedVersion === 'Nenhuma' ? 'Instalar' : 'Atualizar'}</Text>
         </TouchableOpacity>
       )}
-
       {showReinstallButton && (
         <TouchableOpacity style={styles.primaryButton} onPress={downloadAndInstall} activeOpacity={0.7}>
           <Text style={styles.primaryButtonText}>Reinstalar ({latestVersion})</Text>
         </TouchableOpacity>
       )}
-
-      <TouchableOpacity 
-        style={styles.secondaryButton} 
-        onPress={checkUpdates} 
-        disabled={isChecking || isDownloading}
-        activeOpacity={0.7}
-      >
+      <TouchableOpacity style={styles.secondaryButton} onPress={checkUpdates} disabled={isChecking || isDownloading} activeOpacity={0.7}>
           <Text style={styles.secondaryButtonText}>Verificar Novamente</Text>
       </TouchableOpacity>
     </View>

@@ -15,7 +15,11 @@
     "react-native": "0.79.6",
     "expo-file-system": "~18.1.11",
     "expo-intent-launcher": "~12.1.5",
-    "expo-secure-store": "~14.2.4"
+    "expo-secure-store": "~14.2.4",
+    "expo-notifications": "~0.31.4",
+    "expo-system-ui": "~5.0.11",
+    "expo-background-fetch": "~13.1.6",
+    "expo-task-manager": "~13.1.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

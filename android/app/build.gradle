@@ -175,3 +175,18 @@ dependencies {
         implementation jscFlavor
     }
 }
+// Adicione este bloco no FINAL do arquivo android/app/build.gradle
+android.applicationVariants.all { variant ->
+    if (variant.buildType.name == "release") {
+        variant.outputs.all { output ->
+            // Você pode personalizar o nome base do app aqui
+            def appName = "INSTALADOR-ZENITH"
+            
+            // Pega a versão definida no seu app.json (ex: "1.0.0")
+            def appVersion = variant.versionName
+
+            // Define o novo nome do arquivo APK
+            output.outputFileName = "${appName}-${appVersion}.apk"
+        }
+    }
+}
