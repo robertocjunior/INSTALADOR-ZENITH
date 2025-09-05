@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/icon.png",
       "resizeMode": "contain",
@@ -19,10 +18,8 @@
       "android"
     ],
     "android": {
-      "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "monochromeImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.robertocjunior.INSTALADORZENITH",
@@ -30,14 +27,25 @@
         "REQUEST_INSTALL_PACKAGES",
         "RECEIVE_BOOT_COMPLETED"
       ],
-      "notification": {
-        "icon": "./assets/icons/icon512x512.png",
-        "color": "#007AFF"
-      }
+      "googleServicesFile": "./google-services.json"
     },
-    "owner": "robertocjunior",
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icons/icon512x512.png",
+          "color": "#007AFF"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "edgeToEdge": true
+          }
+        }
+      ]
     ]
   }
 }

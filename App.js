@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // Adicionado 'useRef'
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Alert, Image, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as FileSystem from 'expo-file-system';
@@ -21,18 +21,8 @@ const INSTALLED_VERSION_KEY = 'zenith_installed_version';
 
 // ==============================================================================
 // PARTE 1: LÓGICA DA TAREFA EM SEGUNDO PLANO
+// (OBS: Esta parte pode ser removida se o GitHub Actions for a única fonte de notificações)
 // ==============================================================================
-
-async function sendUpdateNotification(version) {
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "Nova atualização do Zenith! 🚀",
-      body: `A versão ${version} está pronta para ser instalada.`,
-      sound: 'default',
-    },
-    trigger: { seconds: 1 },
-  });
-}
 
 TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
   try {
@@ -59,7 +49,8 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
 
     if (latestTag && localVersion !== latestTag) {
       console.log(`[${new Date().toLocaleTimeString()}] Nova versão encontrada em background: ${latestTag}`);
-      await sendUpdateNotification(latestTag);
+      // A notificação agora virá do Firebase, então a linha abaixo pode ser removida.
+      // await sendUpdateNotification(latestTag); 
       return BackgroundFetch.BackgroundFetchResult.NewData;
     } else {
       console.log(`[${new Date().toLocaleTimeString()}] Nenhuma nova versão encontrada em background.`);
@@ -111,9 +102,32 @@ export default function App() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
 
+  // --- CÓDIGO ADICIONADO ---
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  // --- FIM DO CÓDIGO ADICIONADO ---
+
   useEffect(() => {
     registerForPushNotificationsAsync();
     registerBackgroundFetchAsync();
+
+    // --- CÓDIGO ADICIONADO PARA RECEBER NOTIFICAÇÕES PUSH ---
+    // Este listener é acionado quando o app está aberto e recebe uma notificação
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      console.log('--- NOTIFICAÇÃO PUSH RECEBIDA ---');
+      console.log(notification);
+      // Ao receber a notificação, podemos re-verificar as atualizações
+      checkUpdates();
+    });
+
+    // Este listener é acionado quando o usuário clica em uma notificação
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log('--- USUÁRIO CLICOU NA NOTIFICAÇÃO PUSH ---');
+      console.log(response);
+      // Ao clicar na notificação, também podemos re-verificar as atualizações
+      checkUpdates();
+    });
+    // --- FIM DO CÓDIGO ADICIONADO ---
 
     if (!GITHUB_TOKEN || !REPO_OWNER || !REPO_NAME) {
       Alert.alert("Erro de Configuração", "As variáveis de ambiente do GitHub não foram encontradas.");
@@ -121,6 +135,13 @@ export default function App() {
       return;
     }
     checkUpdates();
+
+    // --- CÓDIGO ADICIONADO (LIMPEZA DOS LISTENERS) ---
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+    // --- FIM DO CÓDIGO ADICIONADO ---
   }, []);
 
   const checkUpdates = async () => {
