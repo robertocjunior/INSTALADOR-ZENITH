@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download - Instalador Zenith</title>
-    <!-- Tailwind CSS para estilização rápida e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fonte monoespaçada para a aparência de terminal -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Define a fonte Fira Code como padrão */
         body {
             font-family: 'Fira Code', monospace;
         }
@@ -21,30 +18,26 @@
             animation: blink 1s step-end infinite;
         }
         @keyframes blink {
-            50% {
-                opacity: 0;
-            }
+            50% { opacity: 0; }
         }
     </style>
 </head>
-<body class="bg-gray-900 text-green-400 min-h-screen flex items-center justify-center p-4 antialiased">
+<body class="bg-gradient-to-br from-[#111827] to-black text-green-400 min-h-screen flex items-center justify-center p-2 sm:p-4 antialiased">
 
-    <!-- Container principal do terminal -->
-    <div id="terminal" class="w-full max-w-4xl h-[90vh] max-h-[600px] bg-black bg-opacity-80 rounded-lg shadow-2xl shadow-green-500/10 flex flex-col">
+    <div id="terminal" class="w-full max-w-4xl h-[95vh] sm:h-[90vh] max-h-[700px] bg-black bg-opacity-70 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-2xl shadow-green-500/10 flex flex-col">
         
-        <!-- Cabeçalho da janela do terminal -->
-        <div class="bg-gray-800 p-3 flex items-center rounded-t-lg">
-            <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-            <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-            <div class="w-3 h-3 rounded-full bg-green-500"></div>
-            <div class="flex-grow text-center text-gray-400 text-sm font-semibold">bash -- Instalador Zenith APK</div>
+        <div class="bg-gray-800/80 p-2 sm:p-3 flex items-center rounded-t-lg border-b border-gray-700/50">
+            <div class="flex space-x-2">
+                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            </div>
+            <div class="flex-grow text-center text-gray-400 text-xs sm:text-sm font-semibold">bash -- Instalador Zenith APK</div>
         </div>
 
-        <!-- Corpo do terminal onde o texto será exibido -->
-        <div id="terminal-body" class="p-4 overflow-y-auto h-full">
+        <div id="terminal-body" class="p-3 sm:p-4 overflow-y-auto h-full text-sm sm:text-base">
             <div id="output"></div>
-            <!-- Linha de comando final com cursor piscando -->
-            <div class="flex items-center">
+            <div class="flex items-center mt-2">
                 <span class="text-blue-400">visitante@zenith</span><span class="text-gray-500">:</span><span class="text-purple-400">~</span><span class="text-gray-500">$</span>
                 <span class="cursor ml-2"></span>
             </div>
@@ -55,18 +48,17 @@
         const output = document.getElementById('output');
         const terminalBody = document.getElementById('terminal-body');
         
-        // IMPORTANTE: Link atualizado para o seu arquivo APK na release do GitHub.
+        // Link para o seu arquivo APK
         const downloadUrl = 'https://github.com/robertocjunior/INSTALADOR-ZENITH/releases/download/V1.0.1/INSTALADOR-ZENITH-1.0.1.apk';
 
-        // Linhas de texto que simulam a execução de comandos, agora para um APK.
         const lines = [
             { text: 'Iniciando conexão com o repositório Zenith Mobile...', isCommand: true, delay: 500 },
             { text: 'Conexão estabelecida com sucesso.', isCommand: false, delay: 300 },
-            { text: 'Procurando por pacotes de aplicação Android (*.apk)...', isCommand: true, commandText: 'find . -name "INSTALADOR-ZENITH-*.apk"', delay: 800 },
+            { text: 'find . -name "INSTALADOR-ZENITH-*.apk"', isCommand: true, delay: 800 },
             { text: 'Arquivo encontrado: ./INSTALADOR-ZENITH-1.0.1.apk', isCommand: false, delay: 1000 },
-            { text: 'Verificando permissões de download...', isCommand: true, commandText: 'ls -l INSTALADOR-ZENITH-1.0.1.apk', delay: 500 },
+            { text: 'ls -l INSTALADOR-ZENITH-1.0.1.apk', isCommand: true, delay: 500 },
             { 
-                text: `-rwxr-xr-x 1 zenith users 59.6M Set 23 15:08 <a href="${downloadUrl}" class="text-cyan-400 underline font-bold hover:bg-cyan-400 hover:text-black transition-all duration-200 p-1 rounded">INSTALADOR-ZENITH-1.0.1.apk</a>`, 
+                text: `-rwxr-xr-x 1 zenith users 59.6M Set 23 15:08 <a href="${downloadUrl}" class="text-cyan-300 bg-gray-700/50 inline-block px-3 py-1 mt-1 rounded-md border border-cyan-500/50 font-bold hover:bg-cyan-400 hover:text-black focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-200">INSTALADOR-ZENITH-1.0.1.apk</a>`, 
                 isCommand: false, 
                 delay: 500 
             },
@@ -77,7 +69,6 @@
 
         let lineIndex = 0;
 
-        // Função para "digitar" as linhas no terminal
         function typeLine() {
             if (lineIndex >= lines.length) {
                 return;
@@ -85,33 +76,24 @@
 
             const currentLine = lines[lineIndex];
             const lineElement = document.createElement('div');
-            lineElement.className = 'mb-2';
-
+            
             if (currentLine.isCommand) {
-                // Simula uma linha de comando digitada pelo usuário
-                const commandText = currentLine.commandText || currentLine.text;
-                lineElement.innerHTML = `<div class="flex items-center"><span class="text-blue-400">visitante@zenith</span><span class="text-gray-500">:</span><span class="text-purple-400">~</span><span class="text-gray-500">$</span> <span class="pl-2">${commandText}</span></div>`;
+                lineElement.className = 'mb-1';
+                lineElement.innerHTML = `<div class="flex items-start"><span class="flex-shrink-0"><span class="text-blue-400">visitante@zenith</span><span class="text-gray-500">:</span><span class="text-purple-400">~</span><span class="text-gray-500">$</span></span> <span class="pl-2 flex-1 break-all">${currentLine.text}</span></div>`;
             } else {
-                // Simula a saída de um comando
-                // innerHTML é usado para renderizar a tag <a> e outras tags HTML
-                lineElement.innerHTML = currentLine.text;
+                 lineElement.className = 'mb-1';
+                 lineElement.innerHTML = currentLine.text;
             }
             
             setTimeout(() => {
                 output.appendChild(lineElement);
-                // Rola para o final do terminal a cada nova linha
                 terminalBody.scrollTop = terminalBody.scrollHeight;
-                
                 lineIndex++;
                 typeLine();
             }, currentLine.delay);
         }
 
-        // Inicia a simulação quando a página carrega
-        window.onload = () => {
-            typeLine();
-        };
+        window.onload = typeLine;
     </script>
 </body>
 </html>
-
