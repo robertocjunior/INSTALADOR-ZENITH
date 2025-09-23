@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "INSTALADOR ZENITH",
+    "slug": "INSTALADOR-ZENITH",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "platforms": [
+      "android"
+    ],
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.robertocjunior.INSTALADORZENITH",
+      "permissions": [
+        "REQUEST_INSTALL_PACKAGES",
+        "RECEIVE_BOOT_COMPLETED"
+      ],
+      "googleServicesFile": "./google-services.json"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icons/icon512x512.png",
+          "color": "#007AFF"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "edgeToEdge": true
+          }
+        }
+      ]
+    ]
+  }
+}
