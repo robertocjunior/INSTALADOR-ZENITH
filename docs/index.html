@@ -3,97 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download - Instalador Zenith</title>
+    <title>ZENITH - WMS para Controle de Estoque</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Fira Code', monospace;
-        }
-        /* Efeito do cursor piscando */
-        .cursor::after {
-            content: '█';
-            animation: blink 1s step-end infinite;
-        }
-        @keyframes blink {
-            50% { opacity: 0; }
+            font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-[#111827] to-black text-green-400 min-h-screen flex items-center justify-center p-2 sm:p-4 antialiased">
+<body class="bg-gray-900 text-white antialiased">
 
-    <div id="terminal" class="w-full max-w-4xl h-[95vh] sm:h-[90vh] max-h-[700px] bg-black bg-opacity-70 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-2xl shadow-green-500/10 flex flex-col">
-        
-        <div class="bg-gray-800/80 p-2 sm:p-3 flex items-center rounded-t-lg border-b border-gray-700/50">
-            <div class="flex space-x-2">
-                <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div class="w-3 h-3 rounded-full bg-green-500"></div>
-            </div>
-            <div class="flex-grow text-center text-gray-400 text-xs sm:text-sm font-semibold">bash -- Instalador Zenith APK</div>
+    <!-- Header -->
+    <header class="py-6">
+        <div class="container mx-auto px-6 flex justify-center">
+            <!-- SVG Logo -->
+            <svg class="h-12 w-auto" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M197.507 260.611L120.399 359.987C117.313 356.681 114.698 352.907 112.676 348.862C104.641 332.793 99.2952 315.323 97.0202 297.502L96.4688 293.183L197.507 260.611Z" fill="#102E48"/>
+                <path d="M214.119 165.224L228.078 157.579L223.425 171.539L153.961 215.41L162.45 176.527C163.652 171.021 165.729 165.744 168.601 160.896C169.249 159.803 170.099 158.843 171.106 158.068L236.054 108.057L235.057 127.999L229.116 132.5C225.842 134.981 223.394 138.394 222.095 142.291L233.396 133.982L230.072 150.6L218.102 158.926C215.98 160.403 214.544 162.673 214.119 165.224Z" fill="#102E48"/>
+                <path d="M355.709 134.981L338.048 147.472C331.742 151.932 326.581 157.821 322.983 164.656L321.809 166.887L349.727 150.269L332.443 189.488L307.661 203.65C302.539 206.576 298.169 210.655 294.896 215.564L293.225 218.071L325.464 203.78L308.182 234.025L277.716 247.121C274.395 248.549 271.581 250.944 269.64 253.994L267.966 256.625L299.54 247.319L282.59 274.24L258.586 280.853C253.021 282.386 248.094 285.663 244.527 290.202L242.706 292.52L273.948 286.537L258.327 309.803L232.735 335.727L218.111 341.377L204.152 340.712L259.324 380.928L305.19 413.499L285.913 416.158L260.653 395.552L306.852 442.415L282.59 438.759L244.035 397.546L288.239 459.698L179.89 402.199L155.776 389.297C146.609 384.392 137.886 378.7 129.703 372.286L148.647 350.351L224.094 396.217L162.274 333.733L249.354 222.724L92.4785 278.561L81.6787 252.193C72.5974 230.02 51.873 214.794 28 212.753C36.2924 207.298 45.7998 203.965 55.6836 203.05L58.5771 202.782L65.8574 198.206C68.732 196.399 71.9286 195.165 75.2715 194.571C81.8316 193.404 88.529 193.215 95.1445 194.009L95.5605 194.059C99.6929 194.555 103.745 195.576 107.619 197.098L120.396 202.117L148.979 218.071L145.512 220.239C144.291 221.002 142.931 221.516 141.511 221.753C140.293 221.956 139.052 221.971 137.83 221.796L133.485 221.175C132.52 221.037 131.948 222.222 132.657 222.892L138.937 228.823C140.933 230.709 143.956 230.998 146.274 229.525L370.333 87.1204L355.709 134.981ZM85.1133 200.234C83.0227 205.251 78.9498 209.181 73.8604 211.089C78.9424 213.418 82.8117 217.777 84.5225 223.099L84.8281 224.051L85.0986 223.363C87.2557 217.872 91.6199 213.539 97.126 211.421L96.5498 211.199C91.399 209.218 87.2838 205.215 85.1611 200.121L85.1133 200.234Z" fill="#102E48"/>
+                <path d="M282.588 438.758L306.85 442.414L361.025 497.254L329.783 481.633L314.577 473.096C312.103 471.707 309.883 469.907 308.013 467.773L282.588 438.758Z" fill="#24ACE0"/>
+                <path d="M285.911 416.159L305.188 413.5L363.683 455.71C351.32 455.048 339.082 452.898 327.233 449.307L323.135 448.066L285.911 416.159Z" fill="#24ACE0"/>
+                <path d="M236.055 108.058L284.912 69.1721L284.754 69.925C282.885 78.8561 279.206 87.3095 273.944 94.764L235.058 128L236.055 108.058Z" fill="#24ACE0"/>
+                <path d="M233.399 133.985L273.947 104.405C271.759 113.378 267.606 121.753 261.79 128.927L260.652 130.329L230.075 150.604L233.399 133.985Z" fill="#24ACE0"/>
+                <path d="M228.079 157.58L258.656 139.3C256.265 146.256 252.002 152.417 246.336 157.106L245.362 157.912L223.426 171.539L228.079 157.58Z" fill="#24ACE0"/>
+                <path d="M299.538 247.316L367.673 225.38C359.983 236.585 350.305 246.288 339.12 254.007L332.442 258.616L282.588 274.237L299.538 247.316Z" fill="#24ACE0"/>
+                <path d="M325.472 203.779L406.568 168.548C399.298 181.327 390.146 192.939 379.42 202.994L374.329 207.767L308.189 234.024L325.472 203.779Z" fill="#24ACE0"/>
+                <path d="M349.729 150.272L452.429 89.7819L447.394 100.38C442.35 110.999 436.003 120.948 428.498 129.998L416.263 143.014C414.021 145.399 411.404 147.401 408.516 148.941L332.446 189.49L349.729 150.272Z" fill="#24ACE0"/>
+                <path d="M370.332 87.1195L484 14C478.061 30.936 469.265 46.7291 457.992 60.694L452.758 67.1778L355.708 134.979L370.332 87.1195Z" fill="#24ACE0"/>
+                <path d="M273.947 286.537L320.145 276.899L312.169 283.546L304.192 290.193L287.906 301.826L280.987 306.768C274.753 311.221 268.898 316.181 263.481 321.598L260.745 324.333C257.367 327.712 254.302 331.391 251.59 335.324L251.179 335.92C249.744 338.001 248.534 340.229 247.572 342.567L246.36 345.511C245.044 348.706 244.367 352.129 244.367 355.585V355.703C244.367 358.757 244.916 361.786 245.988 364.645C246.892 367.056 248.27 369.261 250.041 371.13L259.323 380.928L244.367 371.289L226.087 357.995L211.13 346.362L204.151 340.712L209.871 340.533C213.131 340.431 216.358 339.856 219.452 338.824C224.294 337.211 228.88 334.914 233.071 332.003L234.166 331.243C237.191 329.142 239.977 326.717 242.475 324.011L258.658 306.479L273.947 286.537Z" fill="#24ACE0"/>
+            </svg>
         </div>
+    </header>
 
-        <div id="terminal-body" class="p-3 sm:p-4 overflow-y-auto h-full text-sm sm:text-base">
-            <div id="output"></div>
-            <div class="flex items-center mt-2">
-                <span class="text-blue-400">visitante@zenith</span><span class="text-gray-500">:</span><span class="text-purple-400">~</span><span class="text-gray-500">$</span>
-                <span class="cursor ml-2"></span>
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 text-center">
+
+        <!-- Hero Section -->
+        <section class="pt-12 pb-16">
+            <div class="flex justify-center items-end gap-x-4 md:gap-x-6 mb-4">
+                <svg class="h-16 md:h-20 w-auto text-white" viewBox="0 0 1144 202" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#clip0_268_190)">
+                        <rect x="667.509" width="36.9693" height="201.277" fill="currentColor"/>
+                        <path d="M975.584 0H1012.55V86.2616H1107.03V0H1144V201.277H1107.03V119.123H1012.55V201.277H975.584V0Z" fill="currentColor"/>
+                        <path d="M823.593 0H860.563H922.178V36.9693H860.563V201.277H823.593V36.9693H759.924V0H823.593Z" fill="currentColor"/>
+                        <path d="M425.147 0H453.901L558.648 135.554V0H593.563V201.277H564.809L460.063 69.8308V201.277H425.147V0Z" fill="currentColor"/>
+                        <path d="M0 0H160V31.0825L51.282 167.845H160V201H0V171.99L106.667 35.2268H0V0Z" fill="currentColor"/>
+                        <path d="M256.732 168.415H375.855V201.277H215.655V160.199L256.732 119.122V168.415ZM355.317 82.1543V115.016H260.84L293.701 82.1543H355.317ZM375.855 36.9697H256.732V82.1533H215.655V0H375.855V36.9697Z" fill="currentColor"/>
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_268_190">
+                        <rect width="1144" height="201.28" fill="white"/>
+                        </clipPath>
+                    </defs>
+                </svg>
             </div>
-        </div>
-    </div>
+            <p class="text-lg md:text-xl text-blue-300 mb-8 max-w-2xl mx-auto">
+                Otimize seu controle de estoque com a solução WMS definitiva, perfeitamente integrada ao Sankhya.
+            </p>
+            <div class="flex justify-center">
+                <a href="https://github.com/robertocjunior/INSTALADOR-ZENITH/releases/download/V1.0.1/INSTALADOR-ZENITH-1.0.1.apk"
+                   class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                    Download do App
+                </a>
+            </div>
+            <p class="text-gray-400 mt-4 text-sm">Versão 1.0.1 para Android</p>
+        </section>
 
-    <script>
-        const output = document.getElementById('output');
-        const terminalBody = document.getElementById('terminal-body');
-        
-        // Link para o seu arquivo APK
-        const downloadUrl = 'https://github.com/robertocjunior/INSTALADOR-ZENITH/releases/download/V1.0.1/INSTALADOR-ZENITH-1.0.1.apk';
+        <!-- Screenshots Section -->
+        <section class="py-16">
+            <h2 class="text-3xl font-bold mb-12">Conheça a Interface</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Imagem 1: Tela de Login -->
+                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
+                    <img src="images/Frame 1.png" alt="Tela de Login do ZENITH" class="w-full h-auto">
+                    <div class="p-4">
+                        <h3 class="font-semibold">Login Integrado</h3>
+                        <p class="text-sm text-gray-400">Acesse com seu usuário Sankhya.</p>
+                    </div>
+                </div>
+                <!-- Imagem 2: Tela de Consulta -->
+                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
+                    <img src="images/Frame 2.jpg" alt="Tela de Consulta de Estoque do ZENITH" class="w-full h-auto">
+                    <div class="p-4">
+                        <h3 class="font-semibold">Consulta Rápida</h3>
+                        <p class="text-sm text-gray-400">Localize produtos no estoque facilmente.</p>
+                    </div>
+                </div>
+                <!-- Imagem 3: Menu de Opções -->
+                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
+                    <img src="images/Frame 3.png" alt="Menu do ZENITH" class="w-full h-auto">
+                    <div class="p-4">
+                        <h3 class="font-semibold">Operações Simplificadas</h3>
+                        <p class="text-sm text-gray-400">Acesse o histórico e outras funções.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        const lines = [
-            { text: 'Iniciando conexão com o repositório Zenith Mobile...', isCommand: true, delay: 500 },
-            { text: 'Conexão estabelecida com sucesso.', isCommand: false, delay: 300 },
-            { text: 'find . -name "INSTALADOR-ZENITH-*.apk"', isCommand: true, delay: 800 },
-            { text: 'Arquivo encontrado: ./INSTALADOR-ZENITH-1.0.1.apk', isCommand: false, delay: 1000 },
-            { text: 'ls -l INSTALADOR-ZENITH-1.0.1.apk', isCommand: true, delay: 500 },
-            { 
-                text: `-rwxr-xr-x 1 zenith users 59.6M Set 23 15:08 <a href="${downloadUrl}" class="text-cyan-300 bg-gray-700/50 inline-block px-3 py-1 mt-1 rounded-md border border-cyan-500/50 font-bold hover:bg-cyan-400 hover:text-black focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-200">INSTALADOR-ZENITH-1.0.1.apk</a>`, 
-                isCommand: false, 
-                delay: 500 
-            },
-            { text: '', isCommand: false, delay: 300 },
-            { text: 'Tudo pronto! Clique no nome do arquivo acima para baixar o APK.', isCommand: false, delay: 100 },
-            { text: '<span class="text-yellow-400">Aviso: Lembre-se de habilitar a instalação de "fontes desconhecidas" no seu Android.</span>', isCommand: false, delay: 100 },
-        ];
+    </main>
 
-        let lineIndex = 0;
+    <!-- Footer -->
+    <footer class="text-center py-8 mt-16 border-t border-gray-800">
+        <p class="text-gray-500">&copy; 2024 ZENITH. Todos os direitos reservados.</p>
+    </footer>
 
-        function typeLine() {
-            if (lineIndex >= lines.length) {
-                return;
-            }
-
-            const currentLine = lines[lineIndex];
-            const lineElement = document.createElement('div');
-            
-            if (currentLine.isCommand) {
-                lineElement.className = 'mb-1';
-                lineElement.innerHTML = `<div class="flex items-start"><span class="flex-shrink-0"><span class="text-blue-400">visitante@zenith</span><span class="text-gray-500">:</span><span class="text-purple-400">~</span><span class="text-gray-500">$</span></span> <span class="pl-2 flex-1 break-all">${currentLine.text}</span></div>`;
-            } else {
-                 lineElement.className = 'mb-1';
-                 lineElement.innerHTML = currentLine.text;
-            }
-            
-            setTimeout(() => {
-                output.appendChild(lineElement);
-                terminalBody.scrollTop = terminalBody.scrollHeight;
-                lineIndex++;
-                typeLine();
-            }, currentLine.delay);
-        }
-
-        window.onload = typeLine;
-    </script>
 </body>
 </html>
+
+
